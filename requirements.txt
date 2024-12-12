@@ -1,0 +1,4 @@
+Flask
+fake-useragent
+bs4
+requests

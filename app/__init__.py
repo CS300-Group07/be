@@ -130,3 +130,30 @@ def get_top_frequency_products():
 @app.route('/products/trending', methods=['GET'])
 def get_trending_products():
     return product_services.get_trending_view_products(10)
+
+@app.route('/account/update', methods=['POST'])
+def update_user_information():
+    user_id = request.form.get('user_id')
+    if not user_id:
+        return {
+            'status': 'failed',
+            'message': 'User ID is required'
+        }, 400
+    first_name = request.form.get('first_name')
+    last_name = request.form.get('last_name')
+    email = request.form.get('email')
+    phone = request.form.get('phone')
+    address_line1 = request.form.get('address_line1')
+    address_line2 = request.form.get('address_line2')
+    city = request.form.get('city')
+    state = request.form.get('state')
+    postal_code = request.form.get('postal_code')
+    country = request.form.get('country')
+    message = account_services.update_user_information(user_id, first_name, last_name, email, phone, address_line1, address_line2, city, state, postal_code, country)
+    if message == 'Success':
+        return {
+            'status': 'updated'
+        }, 200
+    return {
+        'status': 'failed',
+    }, 400

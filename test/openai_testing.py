@@ -16,6 +16,7 @@ user_id = login_response.json()['user_id']
 conversation_create_route = f'http://{host}:{port}/chatbot/create/{user_id}'
 conversation_create_response = requests.post(conversation_create_route)
 conversation_id = conversation_create_response.text
+print(f'Conversation ID: {conversation_id}')
 
 message = 'Hello, who are you?'
 print(f'User message: {message}')

@@ -34,30 +34,33 @@ def check_product_id_exists(product_id):
     result = use_db(query, (product_id,), fetch=True)
     return result and len(result) > 0
 
-def get_product_id(product_url):
+def get_product_id(name:str, retailer:str):
     query = """
     SELECT product_id
     FROM products
-    WHERE product_url = %s;
+    WHERE name = %s AND retailer = %s;
     """
-    result = use_db(query, (product_url,), fetch=True)
+    data = (name, retailer)
+    result = use_db(query, data, fetch=True)
     return result[0][0] if result else None
 
 def insert_or_update_product(name: str, price: int, product_url: str, retailer: str, image_url: str):
     if check_product_exists(name, retailer):
+        print(f'Product {name} from {retailer} already exists. Updating price and product_url.')
         query = """
         UPDATE products
-        SET price = %s, product_url = %s, updated_at = NOW(), image_url = %s
+        SET price = %s, product_url = %s, image_url = %s, updated_at = NOW()
         WHERE name = %s AND retailer = %s
         """
-        use_db(query, (price, product_url, image_url, name, retailer))
+        data = (price, product_url, image_url, name, retailer)
+        use_db(query, data)
     else:
         query = """
         INSERT INTO products (name, price, product_url, retailer, image_url)
         VALUES (%s, %s, %s, %s, %s);
         """
         use_db(query, (name, price, product_url, retailer, image_url))
-    product_id = get_product_id(product_url)
+    product_id = get_product_id(name, retailer)
     return product_id
 
 def search_products_with_keyword(key: str, num_per_pages=200, start=0):

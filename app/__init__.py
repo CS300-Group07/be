@@ -9,6 +9,7 @@ from app.services.product_services import search_products_with_keyword as servic
 from app.services.product_services import search_product_with_product_id as service_search_product_with_product_id
 from app.services import product_services
 from app.services import openai_services
+from app.services import wish_list_services
 
 app = Flask(__name__)
 CORS(app)
@@ -156,3 +157,27 @@ def update_user_information(user_id: int):
     return {
         'status': 'failed',
     }, 400
+
+@app.route('/wish-list/add/<int:user_id>/<int:product_id>', methods=['POST'])
+def add_to_wish_list(user_id: int, product_id: int):
+    if wish_list_services.add_to_wishlist(user_id, product_id):
+        return {
+            'status': 'added'
+        }, 200
+    return {
+        'status': 'failed'
+    }, 400
+
+@app.route('/wish-list/remove/<int:user_id>/<int:product_id>', methods=['POST'])
+def remove_from_wish_list(user_id: int, product_id: int):
+    if wish_list_services.remove_from_wishlist(user_id, product_id):
+        return {
+            'status': 'removed'
+        }, 200
+    return {
+        'status': 'failed'
+    }, 400
+
+@app.route('/wish-list/user/<int:user_id>', methods=['GET'])
+def get_wish_list(user_id: int):
+    return wish_list_services.retrieve_wishlist(user_id)

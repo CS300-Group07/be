@@ -3,10 +3,11 @@ import json
 from PIL import Image
 import base64
 import io
+from test.settings import Config
 
 
 def test_search_products(key, num, start):
-    base_url = f'http://127.0.0.1:5002'
+    base_url = f'{Config.HOST}:{Config.PORT}'
     url = f'{base_url}/search_products?key={key}&num={num}&start={start}'
     response = requests.get(url)
     assert response.status_code == 200

@@ -43,35 +43,37 @@ def get_product_id(product_url):
     result = use_db(query, (product_url,), fetch=True)
     return result[0][0] if result else None
 
-def insert_or_update_product(name: str, price: int, product_url: str, retailer: str):
+def insert_or_update_product(name: str, price: int, product_url: str, retailer: str, image_url: str):
     if check_product_exists(name, retailer):
         query = """
         UPDATE products
-        SET price = %s, product_url = %s, updated_at = NOW()
+        SET price = %s, product_url = %s, updated_at = NOW(), image_url = %s
         WHERE name = %s AND retailer = %s
         """
+        use_db(query, (price, product_url, image_url, name, retailer))
     else:
         query = """
-        INSERT INTO products (name, price, product_url, retailer)
-        VALUES (%s, %s, %s, %s);
+        INSERT INTO products (name, price, product_url, retailer, image_url)
+        VALUES (%s, %s, %s, %s, %s);
         """
-        use_db(query, (name, price, product_url, retailer))
+        use_db(query, (name, price, product_url, retailer, image_url))
     product_id = get_product_id(product_url)
     return product_id
 
 def search_products_with_keyword(key: str, num_per_pages=200, start=0):
     products = scrape_products(key, num_per_pages, start)
     for product in products:
-        product_id = insert_or_update_product(product['title'], product['price'], product['product_url'], product['retailer'])
+        product_id = insert_or_update_product(product['title'], product['price'], product['product_url'], product['retailer'], product['image'])
         product['product_id'] = product_id
         # rename title to name
         product['name'] = product.pop('title')
+        product['image_url'] = product.pop('image')
     return products
 
 
 def search_product_with_product_id(product_id):
     query = """
-    SELECT name, price, product_url, retailer
+    SELECT name, price, product_url, retailer, image_url
     FROM products
     WHERE product_id = %s;
     """
@@ -82,13 +84,14 @@ def search_product_with_product_id(product_id):
             'name': result[0][0],
             'price': float(result[0][1]),
             'product_url': result[0][2],
-            'retailer': result[0][3]
+            'retailer': result[0][3],
+            'image_url': result[0][4]
         }
     return None
 
 def get_lastest_products(top_k):
     query = """
-    SELECT product_id, name, price, product_url, retailer
+    SELECT product_id, name, price, product_url, retailer, image_url
     FROM products
     ORDER BY created_at DESC
     LIMIT %s;
@@ -100,12 +103,13 @@ def get_lastest_products(top_k):
         'name': result[1],
         'price': float(result[2]),
         'product_url': result[3],
-        'retailer': result[4]
+        'retailer': result[4],
+        'image_url': result[5]
     } for result in results]
 
 def get_recent_products(top_k):
     query = """
-    SELECT product_id, name, price, product_url, retailer
+    SELECT product_id, name, price, product_url, retailer, image_url
     FROM products
     ORDER BY updated_at DESC
     LIMIT %s;
@@ -117,7 +121,8 @@ def get_recent_products(top_k):
         'name': result[1],
         'price': float(result[2]),
         'product_url': result[3],
-        'retailer': result[4]
+        'retailer': result[4],
+        'image_url': result[5]
     } for result in results]
 
 """

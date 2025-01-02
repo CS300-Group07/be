@@ -1,10 +1,11 @@
 import requests
+from test.settings import Config
 
 username = 'username'
 password = 'password'
 email = 'email'
-host = 'localhost'
-port = 5002
+host = Config.BACKEND_HOST
+port = Config.BACKEND_PORT
 
 signup_route = f'http://{host}:{port}/signup/{username}/{email}/{password}'
 signup_response = requests.post(signup_route)

@@ -5,9 +5,10 @@ def hello_world():
 
 call localhost:5002/
 '''
+from test.settings import Config
 
-host = 'localhost'
-port = 5002
+host = Config.BACKEND_HOST
+port = Config.BACKEND_PORT
 url = f'http://{host}:{port}/'
 
 import requests

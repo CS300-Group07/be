@@ -1,10 +1,12 @@
 import requests
+from test.settings import Config
 
 username = 'username'
 password = 'password'
 email = 'email'
 
-url = f'http://127.0.0.1:5002'
+# url = f'http://127.0.0.1:5002'
+url = f'http://{Config.BACKEND_HOST}:{Config.BACKEND_PORT}'
 login_route = f'/login/{username}/{password}'
 signup_route = f'/signup/{username}/{email}/{password}'
 

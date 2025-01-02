@@ -1,4 +1,5 @@
 from flask import Flask, request
+from flask_cors import CORS
 import json
 from fake_useragent import UserAgent
 from app.services.scrap_products import scrape_products
@@ -9,6 +10,7 @@ from app.services.product_services import search_product_with_product_id as serv
 from app.services import openai_services
 
 app = Flask(__name__)
+CORS(app)
 
 user_agent = UserAgent(os=['linux', 'macos', 'windows'])
 

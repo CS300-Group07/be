@@ -181,3 +181,9 @@ def remove_from_wish_list(user_id: int, product_id: int):
 @app.route('/wish-list/user/<int:user_id>', methods=['GET'])
 def get_wish_list(user_id: int):
     return wish_list_services.retrieve_wishlist(user_id)
+
+@app.route('/products/compare/<int:product_id_1>/<int:product_id_2>', methods=['GET'])
+def compare_products(product_id_1: int, product_id_2: int):
+    product_1 = service_search_product_with_product_id(product_id_1)
+    product_2 = service_search_product_with_product_id(product_id_2)
+    return openai_services.compare_products(product_1, product_2)

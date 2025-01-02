@@ -96,3 +96,32 @@ def answer_user_message(conversation_id, message):
     update_conversation(conversation_id, 'system', response_text)
     print(f'Response: {response_text}')
     return response_text
+
+def compare_products(product_1, product_2):
+    product_1_name = product_1['name']
+    product_1_retailer = product_1['retailer']
+    product_2_name = product_2['name']
+    product_2_retailer = product_2['retailer']
+    user_content = f"Compare {product_1_name} from {product_1_retailer} and {product_2_name} from {product_2_retailer}. Response as json object"
+
+    response = client.chat.completions.create(
+        model=Config.ASSISTANT_MODEL,
+        messages=[{
+            'role': 'system',
+            'content': Config.ASSISTANT_PROMPT
+        }, {
+            'role': 'user',
+            'content': user_content
+        }],
+        response_format={
+            'type': 'json_object'
+        }
+    )
+
+    response_text = response.choices[0].message.content
+
+    print(f'Response to the comparison between {product_1_name} and {product_2_name}: {response_text}')
+
+    # return response_text.json()
+    return json.loads(response_text)
+

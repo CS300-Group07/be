@@ -1,5 +1,5 @@
 import requests
-from test.settings import Config
+from settings import Config
 
 username = 'username'
 password = 'password'
@@ -20,6 +20,14 @@ conversation_id = conversation_create_response.text
 print(f'Conversation ID: {conversation_id}')
 
 message = 'Hello, who are you?'
+print(f'User message: {message}')
+conversation_send_message_route = f'http://{host}:{port}/chatbot/{conversation_id}/send_message/{message}'
+conversation_send_message_response = requests.post(conversation_send_message_route)
+assistant_response = conversation_send_message_response.json()['response']
+print(f'Assistant response: {assistant_response}')
+
+
+message = 'Uh, can you give me a brief introduction?'
 print(f'User message: {message}')
 conversation_send_message_route = f'http://{host}:{port}/chatbot/{conversation_id}/send_message/{message}'
 conversation_send_message_response = requests.post(conversation_send_message_route)

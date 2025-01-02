@@ -5,7 +5,7 @@ def hello_world():
 
 call localhost:5002/
 '''
-from test.settings import Config
+from settings import Config
 
 host = Config.BACKEND_HOST
 port = Config.BACKEND_PORT

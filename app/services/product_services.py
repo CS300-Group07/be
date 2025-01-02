@@ -78,8 +78,9 @@ def search_product_with_product_id(product_id):
     result = use_db(query, (product_id,), fetch=True)
     if result:
         return {
+            'product_id': product_id,
             'name': result[0][0],
-            'price': result[0][1],
+            'price': float(result[0][1]),
             'product_url': result[0][2],
             'retailer': result[0][3]
         }

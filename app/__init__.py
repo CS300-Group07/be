@@ -5,6 +5,8 @@ from app.services.scrap_products import scrape_products
 import app.services.account_services as account_services
 import app.services.use_db as use_db
 from app.services.product_services import search_products_with_keyword as service_search_products_with_keyword
+from app.services.product_services import search_product_with_product_id as service_search_product_with_product_id
+from app.services import openai_services
 
 app = Flask(__name__)
 
@@ -30,8 +32,10 @@ def search_products():
 def login(username: str, hashing_password: str):
     cookies = account_services.login(username, hashing_password)
     if cookies:
+        cookies = account_services.user_id_from_username(username)
         return {
-            "cookies": cookies
+            "cookies": cookies,
+            "user_id": account_services.user_id_from_username(username)
         }, 200
     return {
         "message": "Invalid username or password"
@@ -56,12 +60,48 @@ def signup(username: str, email: str, password: str):
 def search_product_with_keyword(keyword: str, filter: str, len: int, page: int):
     results = service_search_products_with_keyword(key=keyword, num_per_pages=len, start=page*len)
     print(f'Searching for: {keyword}')
-    print(f'Results: {results}')
+    # print(f'Results: {results}')
+    # print(f'Number of results: {len(results)}')
     return results
 
-
+@app.route('/product/<int:product_id>', methods=['GET'])
+def search_product_with_product_id(product_id: int):
+    return service_search_product_with_product_id(product_id)
 
 
 @app.route('/list-db-content')
 def list_db_content():
     return use_db.list_out_tables_content(use_db.list_table())
+
+@app.route('/change-password/<username>/<old_password>/<new_password>', methods=['POST'])
+def change_password(username: str, old_password: str, new_password: str):
+    result = account_services.change_password(username, old_password, new_password)
+    if result == 'Success':
+        return {
+            'status': 'changed'
+        }, 200
+    return {
+        'status': 'failed',
+    }, 400
+
+@app.route('/account/<username>', methods=['GET'])
+def get_account_info(username: str):
+    return account_services.get_user_info(username)
+
+@app.route('/chatbot/create/<user_id>', methods=['POST'])
+def create_conversation(user_id: str):
+    return openai_services.create_conversation(user_id)
+
+@app.route('/chatbot/conversation_list/<user_id>', methods=['GET'])
+def get_conversation_list(user_id: str):
+    return openai_services.get_user_conversations(user_id)
+
+@app.route('/chatbot/<conversation_id>/content', methods=['GET'])
+def get_conversation_content(conversation_id: str):
+    return openai_services.get_conversation_content(conversation_id)
+
+@app.route('/chatbot/<conversation_id>/send_message/<message>', methods=['POST'])
+def send_message(conversation_id: str, message: str):
+    return {
+        'response': openai_services.answer_user_message(conversation_id, message)
+    }

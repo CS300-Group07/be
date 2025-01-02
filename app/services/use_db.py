@@ -3,7 +3,7 @@ from psycopg2 import sql
 import datetime
 from app.settings import Config
 
-def use_db(query, data=None, fetch=False):
+def use_db(query, data=None, fetch=False, commit_when_fetching=False):
     """A generic function to run a query and optionally return data.
     
     Args:
@@ -39,6 +39,8 @@ def use_db(query, data=None, fetch=False):
         # If fetch is True, return the result
         if fetch:
             result = cursor.fetchall()
+            if commit_when_fetching:
+                connection.commit()
         else:
             # Commit the transaction for insert/update/delete queries
             connection.commit()

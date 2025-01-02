@@ -15,7 +15,8 @@ def get_information_from_html(html_content):
         price = item.select_one('span.a8Pemb.OFFNJ').text.strip() if item.select_one('span.a8Pemb.OFFNJ') else None
         if price:
             # get number only
-            price = ''.join([i for i in price if i.isdigit() or i == '.'])
+            price = ''.join([i for i in price if i.isdigit()])
+            price = int(price)
         image = item.select_one('div.FM6uVc > div.ArOc1c > img')['src'] if item.select_one('div.FM6uVc > div.ArOc1c > img') else None
         retailer = item.select_one('.aULzUe.IuHnof').text.strip() if item.select_one('.aULzUe.IuHnof') else None
         product_url = 'https://www.google.com' + item.select_one('a.Lq5OHe')['href'] if item.select_one('a.Lq5OHe') else None

@@ -22,7 +22,7 @@ assert response['status'] == 'created', f'Signup response: {response}'
 print(f'Sign up successful: {response}')
 
 response = signup()
-assert response['status'] == 'duplicated username', f'Signup response: {response}'
+assert response['status'] == 'duplicate username', f'Signup response: {response}'
 
 print(f'Sign up failed: {response}')
 

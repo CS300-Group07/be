@@ -1,16 +1,10 @@
 from flask import Flask, request
-from bs4 import BeautifulSoup
-import requests
 import json
 from fake_useragent import UserAgent
-import base64
-from PIL import Image
-import selenium
-from selenium import webdriver
-import os
 from app.services.scrap_products import scrape_products
 import app.services.account_services as account_services
 import app.services.use_db as use_db
+from app.services.product_services import search_products_with_keyword as service_search_products_with_keyword
 
 app = Flask(__name__)
 
@@ -58,4 +52,16 @@ def signup(username: str, email: str, password: str):
         'status': message
     }, 400
 
+@app.route('/product/<keyword>/<filter>/<int:len>/<int:page>', methods=['GET'])
+def search_product_with_keyword(keyword: str, filter: str, len: int, page: int):
+    results = service_search_products_with_keyword(key=keyword, num_per_pages=len, start=page*len)
+    print(f'Searching for: {keyword}')
+    print(f'Results: {results}')
+    return results
 
+
+
+
+@app.route('/list-db-content')
+def list_db_content():
+    return use_db.list_out_tables_content(use_db.list_table())

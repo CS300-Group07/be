@@ -76,11 +76,23 @@ def list_table():
     # Fetch all the results
     tables = cursor.fetchall()
 
-    # Print the table names
-    print("Tables in the database:")
-    for table in tables:
-        print(table[0])
-
     # Close the cursor and connection
     cursor.close()
     connection.close()
+    return tables
+
+def list_table_content(table):
+    try:
+        query = sql.SQL("SELECT * FROM {}").format(sql.Identifier(table))
+        result = use_db(query, fetch=True)
+        return result
+    except Exception as e:
+        return None
+
+def list_out_tables_content(tables):
+    results = {}
+    for table in tables:
+        table_name = table[0]
+        content = list_table_content(table_name)
+        results[table_name] = content
+    return results

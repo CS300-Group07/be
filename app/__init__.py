@@ -1,4 +1,5 @@
 from flask import Flask, request
+from flask_cors import CORS
 import json
 from fake_useragent import UserAgent
 from app.services.scrap_products import scrape_products
@@ -7,6 +8,7 @@ import app.services.use_db as use_db
 from app.services.product_services import search_products_with_keyword as service_search_products_with_keyword
 
 app = Flask(__name__)
+CORS(app)
 
 user_agent = UserAgent(os=['linux', 'macos', 'windows'])
 

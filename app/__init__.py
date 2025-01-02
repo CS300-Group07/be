@@ -131,24 +131,23 @@ def get_top_frequency_products():
 def get_trending_products():
     return product_services.get_trending_view_products(10)
 
-@app.route('/account/update', methods=['POST'])
-def update_user_information():
-    user_id = request.form.get('user_id')
+@app.route('/account/update/<user_id>', methods=['POST'])
+def update_user_information(user_id: int):
     if not user_id:
         return {
             'status': 'failed',
             'message': 'User ID is required'
         }, 400
-    first_name = request.form.get('first_name')
-    last_name = request.form.get('last_name')
-    email = request.form.get('email')
-    phone = request.form.get('phone')
-    address_line1 = request.form.get('address_line1')
-    address_line2 = request.form.get('address_line2')
-    city = request.form.get('city')
-    state = request.form.get('state')
-    postal_code = request.form.get('postal_code')
-    country = request.form.get('country')
+    first_name = request.json.get('first_name')
+    last_name = request.json.get('last_name')
+    email = request.json.get('email')
+    phone = request.json.get('phone')
+    address_line1 = request.json.get('address_line1')
+    address_line2 = request.json.get('address_line2')
+    city = request.json.get('city')
+    state = request.json.get('state')
+    postal_code = request.json.get('postal_code')
+    country = request.json.get('country')
     message = account_services.update_user_information(user_id, first_name, last_name, email, phone, address_line1, address_line2, city, state, postal_code, country)
     if message == 'Success':
         return {

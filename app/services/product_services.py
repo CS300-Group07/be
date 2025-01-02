@@ -15,13 +15,14 @@ CREATE TABLE products (
 );
 """
 
-def check_product_url_exists(product_url):
+def check_product_exists(name, retailer):
     query = """
-    SELECT product_url
+    SELECT product_id
     FROM products
-    WHERE product_url = %s;
+    WHERE name = %s AND retailer = %s;
     """
-    result = use_db(query, (product_url,), fetch=True)
+    data = (name, retailer)
+    result = use_db(query, data, fetch=True)
     return result and len(result) > 0
 
 def check_product_id_exists(product_id):
@@ -43,13 +44,12 @@ def get_product_id(product_url):
     return result[0][0] if result else None
 
 def insert_or_update_product(name: str, price: int, product_url: str, retailer: str):
-    if check_product_url_exists(product_url):
+    if check_product_exists(name, retailer):
         query = """
         UPDATE products
-        SET name = %s, price = %s, updated_at = CURRENT_TIMESTAMP
-        WHERE product_url = %s;
+        SET price = %s, product_url = %s, updated_at = NOW()
+        WHERE name = %s AND retailer = %s
         """
-        use_db(query, (name, price, product_url))
     else:
         query = """
         INSERT INTO products (name, price, product_url, retailer)
@@ -85,3 +85,84 @@ def search_product_with_product_id(product_id):
             'retailer': result[0][3]
         }
     return None
+
+def get_lastest_products(top_k):
+    query = """
+    SELECT product_id, name, price, product_url, retailer
+    FROM products
+    ORDER BY created_at DESC
+    LIMIT %s;
+    """
+    data = (top_k,)
+    results = use_db(query, data, fetch=True)
+    return [{
+        'product_id': result[0],
+        'name': result[1],
+        'price': float(result[2]),
+        'product_url': result[3],
+        'retailer': result[4]
+    } for result in results]
+
+def get_recent_products(top_k):
+    query = """
+    SELECT product_id, name, price, product_url, retailer
+    FROM products
+    ORDER BY updated_at DESC
+    LIMIT %s;
+    """
+    data = (top_k,)
+    results = use_db(query, data, fetch=True)
+    return [{
+        'product_id': result[0],
+        'name': result[1],
+        'price': float(result[2]),
+        'product_url': result[3],
+        'retailer': result[4]
+    } for result in results]
+
+"""
+CREATE TABLE product_views (
+    view_id SERIAL PRIMARY KEY,
+    user_id INT NULL,
+    product_id INT NOT NULL,
+    view_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    session_id VARCHAR(100),
+    user_agent VARCHAR(255),
+    ip_address VARCHAR(45),
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+"""
+
+def view_product(product_id, user_id):
+    query = """
+    INSERT INTO product_views (user_id, product_id)
+    VALUES (%s, %s);
+    """
+    data = (user_id, product_id)
+    use_db(query, data)
+
+def get_top_viewed_products(top_k):
+    query = """
+    SELECT product_id, COUNT(product_id) AS view_count
+    FROM product_views
+    GROUP BY product_id
+    ORDER BY view_count DESC
+    LIMIT %s;
+    """
+    data = (top_k,)
+    results = use_db(query, data, fetch=True)
+    return [search_product_with_product_id(result[0]) for result in results]
+
+def get_trending_view_products(top_k):
+    query = """
+    SELECT product_id, COUNT(product_id) AS view_count
+    FROM product_views
+    WHERE view_date > NOW() - INTERVAL '7 days'
+    GROUP BY product_id
+    ORDER BY view_count DESC
+    LIMIT %s;
+    """
+    data = (top_k,)
+    results = use_db(query, data, fetch=True)
+    return [search_product_with_product_id(result[0]) for result in results]

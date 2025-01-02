@@ -7,6 +7,7 @@ import app.services.account_services as account_services
 import app.services.use_db as use_db
 from app.services.product_services import search_products_with_keyword as service_search_products_with_keyword
 from app.services.product_services import search_product_with_product_id as service_search_product_with_product_id
+from app.services import product_services
 from app.services import openai_services
 
 app = Flask(__name__)
@@ -68,6 +69,7 @@ def search_product_with_keyword(keyword: str, filter: str, len: int, page: int):
 
 @app.route('/product/<int:product_id>', methods=['GET'])
 def search_product_with_product_id(product_id: int):
+    product_services.view_product(product_id, None)
     return service_search_product_with_product_id(product_id)
 
 
@@ -107,3 +109,24 @@ def send_message(conversation_id: str, message: str):
     return {
         'response': openai_services.answer_user_message(conversation_id, message)
     }
+
+@app.route('/products/lastest', methods=['GET'])
+def get_lastest_products():
+    return product_services.get_lastest_products(10)
+
+@app.route('/products/recent', methods=['GET'])
+def get_recent_products():
+    return product_services.get_recent_products(10)
+
+@app.route('/product/<int:product_id>/<user_id>', methods=['POST'])
+def view_product(product_id: int, user_id: int):
+    product_services.view_product(product_id, user_id)
+    return product_services.search_product_with_product_id(product_id)
+
+@app.route('/products/top_frequency', methods=['GET'])
+def get_top_frequency_products():
+    return product_services.get_top_viewed_products(10)
+
+@app.route('/products/trending', methods=['GET'])
+def get_trending_products():
+    return product_services.get_trending_view_products(10)

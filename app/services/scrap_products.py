@@ -42,6 +42,19 @@ def scrape_google_shopping(url):
     driver.quit()
     return get_information_from_html(html_content)
 
+def get_redirect_url(url):
+    options = webdriver.ChromeOptions()
+    options.add_argument('--headless')  # Run Chrome in headless mode
+    options.add_argument('--no-sandbox')  # Disable the sandbox (needed for Docker)
+    options.add_argument('--disable-dev-shm-usage')  # Overcome shared memory issues
+
+    driver = webdriver.Chrome(options=options)
+    driver.get(url)
+    driver.implicitly_wait(0.5)
+    redirect_url = driver.current_url
+    driver.quit()
+    return redirect_url
+
 def scrape_products(products, num_per_pages=200, start=0):
     query = "+".join(products.split())
     url = f'https://www.google.com/search?q={query}&tbm=shop&num={num_per_pages}&start={start}'

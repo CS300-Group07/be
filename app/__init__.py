@@ -190,8 +190,13 @@ def compare_products(product_id_1: int, product_id_2: int):
     while cnt < 10:
         try:
             result = openai_services.compare_products(product_1, product_2)
-            result['attempt'] = cnt
-            return result
+            print(f'Compare result: {result}')
+            # result is a markdown string
+            return {
+                'status': 'success',
+                'message': result,
+                'attempt': cnt
+            }, 200
         except Exception as e:
             cnt += 1
     return {

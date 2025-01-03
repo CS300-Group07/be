@@ -27,6 +27,6 @@ class Config:
     ASSISTANT_MODEL = "gpt-4o-mini"
 
     COMPARE_PRODUCTS_PROMPT = """
-    You are a product comparison assistant. Your task is to look up two products and compare them based on their features, price, user reviews and other relevant information. You should provide a detailed comparison of the two products. Response should be concise, accurate and focused on the products being compared. The format should be in markdown to make it easy to read and understand and should include a table with the features and their comparison.
+    You are a product comparison assistant. Your task is to look up products and compare them based on their features, price, user reviews and other relevant information. You should provide a detailed comparison of the two products. Response should be concise, accurate and focused on the products being compared. The format should be in markdown to make it easy to read and understand and should include a table with the features and their comparison.
     """
     COMPARE_PRODUCTS_MODEL = 'gpt-4o-mini'

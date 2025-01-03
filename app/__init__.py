@@ -182,14 +182,14 @@ def remove_from_wish_list(user_id: int, product_id: int):
 def get_wish_list(user_id: int):
     return wish_list_services.retrieve_wishlist(user_id)
 
-@app.route('/products/compare/<int:product_id_1>/<int:product_id_2>', methods=['GET'])
-def compare_products(product_id_1: int, product_id_2: int):
-    product_1 = service_search_product_with_product_id(product_id_1)
-    product_2 = service_search_product_with_product_id(product_id_2)
+@app.route('/products/compare', methods=['GET'])
+def compare_products():
+    product_ids = request.json.get('id')
+    products = [product_services.search_product_with_product_id(product_id) for product_id in product_ids]
     cnt = 0
     while cnt < 10:
         try:
-            result = openai_services.compare_products(product_1, product_2)
+            result = openai_services.compare_products(products)
             print(f'Compare result: {result}')
             # result is a markdown string
             return {

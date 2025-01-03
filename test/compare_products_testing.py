@@ -12,17 +12,22 @@ def search_products_with_keyword(keyword):
     search_products_response = requests.get(search_products_route)
     return search_products_response.json()
 
-def compare_products(product_id_1, product_id_2):
+def compare_products(compare_id):
     host = Config.BACKEND_HOST
     port = Config.BACKEND_PORT
-    compare_products_route = f'http://{host}:{port}/products/compare/{product_id_1}/{product_id_2}'
-    compare_products_response = requests.get(compare_products_route)
-    return compare_products_response.json()
+    route = f'http://{host}:{port}/products/compare'
+    data = {
+        'id' : compare_id
+    }
+    response = requests.get(route, json=data)
+    return response.json()
+
 
 products = []
 
-while len(products) < 2:
+while len(products) < 5:
     products = search_products_with_keyword('iphone')
 
+compare_id = [1, 3, 4]
 
-print(compare_products(products[0]['product_id'], products[1]['product_id']))
+print(compare_products(compare_id))

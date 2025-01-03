@@ -97,12 +97,16 @@ def answer_user_message(conversation_id, message):
     print(f'Response: {response_text}')
     return response_text
 
-def compare_products(product_1, product_2):
-    product_1_name = product_1['name']
-    product_1_retailer = product_1['retailer']
-    product_2_name = product_2['name']
-    product_2_retailer = product_2['retailer']
-    user_content = f"Compare {product_1_name} from {product_1_retailer} and {product_2_name} from {product_2_retailer}. Response as markdown."
+def compare_products(products):
+    # product_1_name = product_1['name']
+    # product_1_retailer = product_1['retailer']
+    # product_2_name = product_2['name']
+    # product_2_retailer = product_2['retailer']
+    # user_content = f"Compare {product_1_name} from {product_1_retailer} and {product_2_name} from {product_2_retailer}. Response as markdown."
+    product_name_retailer = [f'{product["name"]} from {product["retailer"]}' for product in products]
+    product_name_retailer = ', '.join(product_name_retailer)
+    user_content = f'Compare {product_name_retailer}. Response as markdown.'
+
 
     response = client.chat.completions.create(
         model=Config.ASSISTANT_MODEL,
@@ -117,7 +121,7 @@ def compare_products(product_1, product_2):
 
     response_text = response.choices[0].message.content
 
-    print(f'Response to the comparison between {product_1_name} and {product_2_name}: {response_text}')
+    print(f'Response to the comparison between {product_name_retailer}: {response_text}')
 
     return response_text
 

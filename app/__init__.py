@@ -202,7 +202,4 @@ def compare_products():
     return {
         'status': 'failed',
         'message': 'Failed to compare products'
-    }, 400
-
-
-        
+    }, 400       
